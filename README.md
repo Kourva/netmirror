@@ -24,8 +24,9 @@ Ping process started on mirrors...
 Fastest mirror: https://mirror.albony.xyz/artix
  * speed: 121.82 ms
 ```
+<br>
 
-# ▍Install
+# ▍Setup
 Installing **netmirror** is so simple. just follow following steps...<br>
 ▢ **⒈Clone repository**
 ```bash
