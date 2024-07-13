@@ -2,8 +2,8 @@
 # -*- coding: utf-8 -*-
 
 # ArtixLinux Mirror Optimizer || netmirror
-# Author  : Kourva
-# Source  : https://github.com/Kourva/netmirror
+# Author  : kozyol
+# Source  : https://github.com/kozyol/netmirror
 
 
 #*# Imports
