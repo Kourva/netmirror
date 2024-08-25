@@ -1,5 +1,5 @@
 <h3 align='left'>
-    <img align="left" src="https://github.com/kozyol/netmirror/assets/118578799/872f1e85-dafd-4328-9f5a-69161cceec81" width=120  height=120>
+    <img align="left" src="https://github.com/Kourva/netmirror/assets/118578799/872f1e85-dafd-4328-9f5a-69161cceec81" width=120  height=120>
     <h1>netmirror</h1>
   <p><b>ArtixLinux Mirror Optimizer. Selects fastest mirror in mirrors based on ping ms</b></p>
 </h3>
@@ -30,7 +30,7 @@ Fastest mirror: https://mirror.albony.xyz/artix
 Installing **netmirror** is so simple. just follow following steps...<br>
 ▢ **⒈Clone repository**
 ```bash
-git clone https://github.com/kozyol/netmirror
+git clone https://github.com/Kourva/netmirror
 ```
 ▢ **⒉Navigate to netmirror directory**
 ```bash
