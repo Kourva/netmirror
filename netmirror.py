@@ -11,58 +11,33 @@ import os
 import re
 import socket
 import subprocess
+import requests
 from urllib.parse import urlparse
 
 
+
 #*# Mirrors
-mirrors = [
-    "https://mirrors.dotsrc.org/artix-linux",
-    "https://mirror.clarkson.edu/artix-linux",
-    "http://ftp.ntua.gr/pub/linux/artix-linux",
-    "https://ftp.sh.cvut.cz/artix-linux",
-    "https://mirrors.dotsrc.org/artix-linux",
-    "https://mirror.one.com/artix",
-    "https://artix.cccp.io",
-    "https://ftp.crifo.org/artix",
-    "https://mirror.opensrv.org/artixlinux",
-    "https://quantum-mirror.hu/mirrors/pub/artix-linux",
-    "https://mirror.netcologne.de/artix-linux",
-    "http://mirrors.redcorelinux.org/artixlinux",
-    "https://mirror.pascalpuffke.de/artix-linux",
-    "https://ftp.uni-bayreuth.de/linux/artix-linux",
-    "https://ftp.halifax.rwth-aachen.de/artixlinux",
-    "https://artix.unixpeople.org",
-    "https://mirror1.artixlinux.org",
-    "https://eu-mirror.artixlinux.org",
-    "https://ftp.cc.uoc.gr/mirrors/linux/artixlinux",
-    "http://ftp.ntua.gr/pub/linux/artix-linux",
-    "https://mirrors.qontinuum.space/artixlinux",
-    "https://artix.sakamoto.pl",
-    "https://ftp.ludd.ltu.se/mirrors/artix",
-    "https://mirror.linux.pizza/artix-linux",
-    "https://artix.kurdy.org",
-    "http://artist.artixlinux.org",
-    "https://mirror.vinehost.net/artix-linux",
-    "https://artix.wheaton.edu",
-    "https://mirror.clarkson.edu/artix-linux",
-    "https://mirrors.rit.edu/artixlinux",
-    "https://mirrors.ocf.berkeley.edu/artix-linux",
-    "http://www.nylxs.com/mirror",
-    "https://mirrors.nettek.us/artix-linux",
-    "https://us-mirror.artixlinux.org",
-    "https://mirror.csclub.uwaterloo.ca/artixlinux",
-    "https://gnlug.org/pub/artix-linux",
-    "https://mirror1.cl.netactuate.com/artix",
-    "https://mirrors.tuna.tsinghua.edu.cn/artixlinux",
-    "https://mirrors.aliyun.com/artixlinux",
-    "https://mirror.nju.edu.cn/artixlinux",
-    "https://mirror.albony.xyz/artix",
-    "https://mirror.funami.tech/artix",
-    "https://mirror.freedif.org/Artix",
-    "https://mirrors.cloud.tencent.com/artixlinux",
-    "https://mirrors.42tm.tech/artix-linux",
-    "https://mirror.aarnet.edu.au/pub/artix"
+url = "https://gitea.artixlinux.org/packages/artix-mirrorlist/raw/branch/master/mirrorlist"
+response = requests.get(url)
+response.raise_for_status()
+
+lines = response.text.splitlines()
+
+#*# Remove Comments and irrelevant things
+regexs = [
+        (r"#.*", ""), # COMMENTS
+        (r"Server\ =\ ", ""), # Irrelevant placeholder before server link
 ]
+
+#*# Get each mirror from lines extracted from mirrorlist raw file, using re to filter out the links
+mirrors = []
+for i,line in enumerate(lines, start=1):
+    for pat, repl in regexs:
+        line = re.sub(pat, repl, line)
+    if line.strip() == '':
+        pass
+    else:
+        mirrors.append(line.strip())
 
 #*# Ping all mirrors
 def ping_mirrors():
@@ -79,7 +54,13 @@ def ping_mirrors():
 
     for mirror in mirrors:
         # Get mirror Ip address
-        ipadrs = ipaddr(mirror)
+        # If server not accessible, then jump it and go to next one.
+        try:
+            ipadrs = ipaddr(mirror)
+        except Exception as e:
+            print(f"NOT ACCESSIBLE! : {e}")
+            continue
+
         _, _, name, *_ = mirror.rsplit("/")
         info = name.ljust(info_bar)
         print(f" \33[2;36m*\33[m {info} [\33[2;36m{ipadrs.ljust(15)}\33[m]", end=" ")
@@ -99,15 +80,14 @@ def ping_mirrors():
                 print(f"\33[2;32m{match.groups()[0]} ms █▓▒░\33[m", end="\n")
             if speed_ms > 150:
                 print(f"\33[2;33m{match.groups()[0]} ms █▓▒░\33[m", end="\n")
-            
+
         # Cancel progress when user pressed Ctrl+C
         except KeyboardInterrupt:raise SystemExit("\n\33[2;31mGot keyboard Interrupt. Leaving progress!\33[m")
         # Except ping error and set mirror unavailable  
         except:print(f"\33[2;31mFailed     █▓▒░\33[m", end="\n")
-    
+
     # Return mirrors with ping ms
     return speeds
-
 
 #*# Update Mirrors
 def update_mirrors():
